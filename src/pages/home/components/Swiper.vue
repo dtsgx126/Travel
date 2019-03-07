@@ -5,7 +5,6 @@
       <img class="swiper-img" :src="item.imgUrl" :key='item.id'></swiper-slide>
     <div class="swiper-pagination btn"  slot="pagination"></div>
   </swiper>
-  <div>test</div>
 </div>
 </template>
 <script>
