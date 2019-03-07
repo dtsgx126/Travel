@@ -1,12 +1,14 @@
 <template>
     <div class="header">
      <div class="header-left">
-        左箭头
+     <span class="iconfont">&#xe624;</span>
      </div>
      <div class="header-input">
-        请输入信息
+        <span class="iconfont">&#xe632;</span>
+        输入城市/景点/游玩主题
      </div>
      <div class="header-right">
+     <span class="iconfont">&#xe614;</span>
         北京
      </div>
     </div>
@@ -19,16 +21,31 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
+@import '~styles/varibles.styl'
   .header
-      background:gray
+      background:$bgColor
       display:flex
       height:.86rem
       line-height:.86rem
       padding:.1rem
+      align-items:center
+    .header-left
+      margin-right:.2rem
+      margin-left:.2rem
+      font-weight:bold
     .header-input
       flex:1
       background:#fff
       border-radius:.1rem
+      padding-left:.2rem
+      height:.68rem
+      line-height:.68rem
+      .iconfont
+        margin-right:.2rem
     .header-right
-      padding-right:.2rem
+      padding-right:.1rem
+      padding-left:.1rem
+      .iconfont
+        float:right
+
 </style>
