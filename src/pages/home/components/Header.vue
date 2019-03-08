@@ -1,16 +1,16 @@
 <template>
     <div class="header">
-     <div class="header-left">
-     <span class="iconfont">&#xe624;</span>
-     </div>
-     <div class="header-input">
-        <span class="iconfont">&#xe632;</span>
-        输入城市/景点/游玩主题
-     </div>
-     <div class="header-right">
-     <span class="iconfont">&#xe614;</span>
-        北京
-     </div>
+       <div class="header-left">
+       <span class="iconfont">&#xe624;</span>
+       </div>
+       <div class="header-input">
+          <span class="iconfont">&#xe632;</span>
+          输入城市/景点/游玩主题
+       </div>
+       <div class="header-right">
+       <span class="iconfont">&#xe614;</span>
+          北京
+       </div>
     </div>
 </template>
 
@@ -33,6 +33,7 @@ export default {
       margin-right:.2rem
       margin-left:.2rem
       font-weight:bold
+      color: #fff
     .header-input
       flex:1
       background:#fff
@@ -45,6 +46,7 @@ export default {
     .header-right
       padding-right:.1rem
       padding-left:.1rem
+      color: #fff
       .iconfont
         float:right
 
