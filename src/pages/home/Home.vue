@@ -1,10 +1,10 @@
 <template>
 <div>
-   <home-header></home-header>
-   <home-swiper></home-swiper>
-   <home-icons></home-icons>
-   <home-recommend></home-recommend>
-   <home-weekend></home-weekend>
+   <home-header :city="city"></home-header>
+   <home-swiper :swiperList="swiperList"></home-swiper>
+   <home-icons :iconList='iconList'></home-icons>
+   <home-recommend :recommendList='recommendList'></home-recommend>
+   <home-weekend :weekendList='weekendList'></home-weekend>
 </div>
 </template>
 
@@ -14,6 +14,7 @@ import HomeSwiper from '@/pages/home/components/Swiper.vue'
 import HomeIcons from '@/pages/home/components/Icons.vue'
 import HomeRecommend from '@/pages/home/components/Recommend.vue'
 import HomeWeekend from '@/pages/home/components/Weekend.vue'
+import axios from 'axios'
 export default {
   name: 'Home',
   components: {
@@ -22,6 +23,35 @@ export default {
     HomeIcons,
     HomeRecommend,
     HomeWeekend
+  },
+  data: function () {
+    return {
+      city: '',
+      iconList: [],
+      recommendList: [],
+      swiperList: [],
+      weekendList: []
+    }
+  },
+  methods: {
+    getHomeInfo () {
+      axios.get('/api/index.json')
+        .then(this.getHomeInfoSucc)
+    },
+    getHomeInfoSucc (res) {
+      var data = res.data.data
+      if (res.data.ret && data) {
+        this.city = data.city
+        this.iconList = data.iconList
+        this.recommendList = data.recommendList
+        this.swiperList = data.swiperList
+        this.weekendList = data.weekendList
+      }
+      console.log(this.weekendList)
+    }
+  },
+  mounted () {
+    this.getHomeInfo()
   }
 }
 </script>

@@ -9,14 +9,17 @@
        </div>
        <div class="header-right">
        <span class="iconfont">&#xe614;</span>
-          北京
+          {{this.city}}
        </div>
     </div>
 </template>
 
 <script>
 export default {
-  name: 'HomeHeader'
+  name: 'HomeHeader',
+  props: {
+    city: String
+  }
 }
 </script>
 
