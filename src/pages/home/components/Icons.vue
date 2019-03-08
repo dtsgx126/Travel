@@ -49,6 +49,9 @@ export default {
     height: 0
     overflow: hidden
     padding-bottom: 50%
+.icons
+  padding-top: .2rem
+  padding-bottom: .2rem
 .icon
   width: 25%
   float: left
