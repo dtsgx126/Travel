@@ -22,18 +22,23 @@ export default {
   display: flex
   background: $bgColor
   justify-content: center
-  height: .86rem
+  height: 1rem
   align-items: center
   .btn-wrap
     display: flex
     justify-content: center
     border-radius: .1rem
     overflow: hidden
-    height: .7rem
-    border:.01rem solid #fff
+    height: .6rem
+    border:.1rem solid #fff
     font-weight: 900
+    border-sizing:border-box
+    outline: none
     .btn
       width: 2rem
+      display: inline-block
+      border-top-right-radius: .01rem
+      border-bottom-right-radius: .01rem
     .active
       background: #fff
   .link
