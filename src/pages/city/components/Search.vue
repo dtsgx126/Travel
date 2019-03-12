@@ -11,6 +11,7 @@
         <div class="item-city border-bottom"
           v-for='item of list'
           :key='item.id'
+          @click='handleCityClick(item.name)'
         >{{item.name}}
         </div>
         <div
@@ -59,6 +60,12 @@ export default {
   },
   mounted: function () {
     this.scroll = new Bscroll(this.$refs.selecity)
+  },
+  methods: {
+    handleCityClick (city) {
+      this.$store.dispatch('changeCity', city)
+      this.$router.push('/')
+    }
   }
 
 }
