@@ -25,7 +25,7 @@
           v-for='(items,key) of cities'
           :key='items.id'
         >
-          <div class="title">{{key}}</div>
+          <div class="title" :ref='key'>{{key}}</div>
           <div class="list-item"
             v-for='item of items'
             :key='item.id'
@@ -44,18 +44,24 @@ export default{
   name: 'CityList',
   props: {
     cities: Object,
-    hot: Array
+    hot: Array,
+    letter: String
   },
   mounted: function () {
     this.scroll = new Bscroll(this.$refs.wrapper)
-    console.log(this.hot)
+  },
+  watch: {
+    letter: function () {
+      var ele = this.$refs[this.letter][0]
+      this.scroll.scrollToElement(ele)
+    }
   }
 }
 </script>
 <style lang='stylus' scoped>
 .wrap
   position: absolute
-  top: 2.1rem
+  top: 1.74rem
   left: 0
   right: 0
   bottom: 0
