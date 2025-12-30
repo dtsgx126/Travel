@@ -1,0 +1,79 @@
+name: Stream Download Large Image (Quiet Mode)
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_name:
+        description: '镜像名称'
+        required: true
+        default: 'vllm/vllm-openai:v0.12.0'
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. 清理空间
+      - name: Maximize Disk Space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo docker system prune -a -f
+
+      # 2. 安装 Skopeo
+      - name: Install Skopeo
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y skopeo
+
+      # 3. 流式下载 (强力静默模式)
+      - name: Stream Download and Compress
+        run: |
+          FILENAME=$(echo ${{ inputs.image_name }} | tr '/' '_' | tr ':' '_').tar.gz
+          echo "准备下载: $FILENAME"
+          
+          # =======================================================
+          # 修复核心：
+          # 1. 增加 --quiet 参数，强制 Skopeo 闭嘴
+          # 2. 依然保留 2> /dev/null 作为双重保险
+          # =======================================================
+          
+          skopeo copy \
+            --quiet \
+            --src-tls-verify=false \
+            docker://${{ inputs.image_name }} \
+            docker-archive:/dev/stdout \
+            2> /dev/null \
+            | gzip > $FILENAME
+          
+          echo "打包完成，正在进行文件头质检..."
+          
+          # =======================================================
+          # 自动质检步骤：
+          # 读取文件前10个字节，如果是Gzip二进制，应该显示乱码或特殊字符
+          # 如果包含 "Get" 或 "Copy" 这种英文字母，直接报错
+          # =======================================================
+          
+          # 解压前50个字节看一眼
+          HEAD_CONTENT=$(zcat $FILENAME | head -c 50)
+          echo "文件头预览 (Hex):"
+          zcat $FILENAME | head -c 50 | xxd
+          
+          # 检查是否包含 Skopeo 的常见日志关键词
+          if [[ "$HEAD_CONTENT" == *"Getting image"* ]] || [[ "$HEAD_CONTENT" == *"signatures"* ]]; then
+            echo "❌ 严重错误：文件被 Skopeo 日志污染！"
+            echo "Detected text in binary stream: $HEAD_CONTENT"
+            exit 1
+          else
+            echo "✅ 校验通过：文件头看起来是正常的二进制数据。"
+          fi
+          
+          echo "FILENAME=$FILENAME" >> $GITHUB_ENV
+
+      # 4. 上传
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: ${{ env.FILENAME }}
+          retention-days: 1
