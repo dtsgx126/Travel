@@ -1,0 +1,54 @@
+name: Download Docker Image to Tar (Compressed)
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_name:
+        description: 'vllm/vllm-openai:v0.12.0'
+        required: true
+        default: 'vllm/vllm-openai:v0.12.0'
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. 强力清理磁盘空间 (最激进模式)
+      - name: Maximize Disk Space
+        run: |
+          echo "清理前空间:"
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo rm -rf /usr/share/swift
+          sudo rm -rf /usr/local/.ghcup
+          sudo docker system prune -a -f
+          echo "清理后空间:"
+          df -h
+
+      # 2. 拉取镜像
+      - name: Pull Image
+        run: docker pull ${{ inputs.image_name }}
+
+      # 3. 核心修改：边打包边压缩 (节省一半磁盘空间)
+      - name: Save and Compress Image
+        run: |
+          # 定义文件名，后缀改为 .tar.gz
+          FILENAME=$(echo ${{ inputs.image_name }} | tr '/' '_' | tr ':' '_').tar.gz
+          echo "正在打包并压缩 (Gzip): $FILENAME ..."
+          
+          # 使用管道 | gzip 直接压缩，不占用临时磁盘空间
+          docker save ${{ inputs.image_name }} | gzip > $FILENAME
+          
+          echo "打包完成，文件大小:"
+          ls -lh $FILENAME
+          echo "FILENAME=$FILENAME" >> $GITHUB_ENV
+
+      # 4. 上传结果
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: ${{ env.FILENAME }}
+          retention-days: 1
